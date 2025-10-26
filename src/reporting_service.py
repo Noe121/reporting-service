@@ -13,7 +13,7 @@ import logging
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc, func
 
-from models import (
+from .models import (
     ReportTemplate,
     Report,
     ReportSchedule,
@@ -226,7 +226,7 @@ class ReportScheduleService:
             is_enabled=1,
         )
         # Set initial next_run_at
-        schedule.next_run_at = ReportScheduleService._calculate_next_run(frequency, time_of_day)
+        setattr(schedule, "next_run_at", ReportScheduleService._calculate_next_run(frequency, time_of_day))
         db.add(schedule)
         db.commit()
         db.refresh(schedule)
@@ -287,9 +287,14 @@ class ReportScheduleService:
                 schedule.success_count += 1  # type: ignore[reportAttributeAccessIssue]
             else:
                 schedule.failure_count += 1  # type: ignore[reportAttributeAccessIssue]
-            schedule.next_run_at = ReportScheduleService._calculate_next_run(  # type: ignore[reportAttributeAccessIssue]
-                schedule.frequency, schedule.time_of_day
-            )
+                setattr(
+                    schedule,
+                    "next_run_at",
+                    ReportScheduleService._calculate_next_run(
+                        getattr(schedule, "frequency", "daily"),
+                        getattr(schedule, "time_of_day", "00:00")
+                    )
+                )
             db.commit()
             db.refresh(schedule)
         return schedule
@@ -553,8 +558,7 @@ class ReportAccessService:
             by_type[log.access_type] += 1
         
         unique_users = len(set(log.user_id for log in logs))
-        successful = len([l for l in logs if l.access_status == "success"])
-        
+        successful = len([l for l in logs if getattr(l, "access_status", None) == "success"])
         return {
             "total_accesses": len(logs),
             "successful": successful,

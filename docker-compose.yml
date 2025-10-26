@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  reporting-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reporting-service
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=sqlite:///./reporting_service.db
+      - LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./reporting_service.db:/app/reporting_service.db
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8002/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - reporting-network
+    restart: unless-stopped
+
+networks:
+  reporting-network:
+    driver: bridge

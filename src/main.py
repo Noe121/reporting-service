@@ -20,7 +20,7 @@ app = FastAPI(
 )
 
 # Import models after app creation
-from models import Base
+from .models import Base
 
 # Initialize database
 DATABASE_URL = "sqlite:///./reporting_service.db"
@@ -42,7 +42,7 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-from reporting_service import (
+from .reporting_service import (
     ReportTemplateService,
     ReportGenerationService,
     ReportScheduleService,
