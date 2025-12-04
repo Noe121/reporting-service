@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: reporting-service
     ports:
-      - "8010:8002"
+      - "8014:8014"
     environment:
       - DATABASE_URL=sqlite:///./reporting_service.db
       - LOG_LEVEL=INFO
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./reporting_service.db:/app/reporting_service.db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8014/health"]
       interval: 30s
       timeout: 10s
       retries: 3

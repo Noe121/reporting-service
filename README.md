@@ -17,7 +17,7 @@ A centralized FastAPI-based microservice for report generation, management, and 
 ### Service Overview
 - **Framework**: FastAPI with async support
 - **Database**: MySQL 8.0 (centralized `nilbx_db`)
-- **Port**: 8010 (external), 8002 (container)
+- **Port**: 8014 (external), 8014 (container)
 - **ORM**: SQLAlchemy with Pydantic models
 - **Containerized**: Docker with Python 3.11-slim base
 
@@ -682,7 +682,7 @@ CREATE TABLE report_schedules (
 5. **Run the service:**
    ```bash
    cd src
-   uvicorn main:app --reload --host 0.0.0.0 --port 8002
+   uvicorn main:app --reload --host 0.0.0.0 --port 8014
    ```
 
 ### Docker Setup
@@ -692,15 +692,15 @@ CREATE TABLE report_schedules (
 docker-compose up --build
 
 # Access the service
-# API: http://localhost:8010
-# Docs: http://localhost:8010/docs
+# API: http://localhost:8014
+# Docs: http://localhost:8014/docs
 ```
 
 ### Access the Service
 
-- **API**: http://localhost:8010
-- **API Documentation**: http://localhost:8010/docs
-- **OpenAPI Spec**: http://localhost:8010/openapi.json
+- **API**: http://localhost:8014
+- **API Documentation**: http://localhost:8014/docs
+- **OpenAPI Spec**: http://localhost:8014/openapi.json
 
 ## ⚙️ Configuration
 
@@ -771,7 +771,7 @@ docker run -d \
   -e DB_NAME=nilbx_db \
   -e DB_USER=root \
   -e DB_PASSWORD=rootpassword \
-  -p 8010:8002 \
+  -p 8014:8014 \
   reporting-service
 ```
 
