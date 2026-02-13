@@ -11,6 +11,18 @@ from typing import List, Optional, Dict, Any, Generator
 from fastapi import FastAPI, HTTPException, Depends, Query
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+import os
+import sys
+
+# NIL Platform Middleware
+try:
+    from shared.middleware import CorrelationMiddleware, IdempotencyMiddleware, InMemoryIdempotencyBackend
+except ImportError:
+    from pathlib import Path
+    _repo_root = str(Path(__file__).resolve().parents[2])
+    if _repo_root not in sys.path:
+        sys.path.insert(0, _repo_root)
+    from shared.middleware import CorrelationMiddleware, IdempotencyMiddleware, InMemoryIdempotencyBackend
 
 # Create FastAPI app first
 app = FastAPI(
@@ -18,6 +30,11 @@ app = FastAPI(
     description="Report generation, scheduling, export, and analytics",
     version="1.0.0",
 )
+
+# NIL Platform Middleware
+app.add_middleware(CorrelationMiddleware)
+if os.getenv("IDEMPOTENCY_MIDDLEWARE_ENABLED", "false").lower() == "true":
+    app.add_middleware(IdempotencyMiddleware, backend=InMemoryIdempotencyBackend())
 
 # Import models after app creation
 from .models import Base
